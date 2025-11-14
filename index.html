@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Расписание</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-bottom: 24px;
+        }
+
+        h1 {
+            font-size: 28px;
+            color: #1f2937;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .icon {
+            color: #4f46e5;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+
+        input[type="date"],
+        select {
+            width: 100%;
+            padding: 10px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        input[type="date"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .button-group {
+            grid-column: 1 / -1;
+            display: flex;
+            gap: 12px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px 24px;
+            background: #4f46e5;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #4338ca;
+        }
+
+        button:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 12px 24px;
+            background: transparent;
+            color: #6b7280;
+            border: none;
+            border-bottom: 3px solid transparent;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 0;
+        }
+
+        .tab-button:hover {
+            background: #f9fafb;
+            color: #374151;
+        }
+
+        .tab-button.active {
+            color: #4f46e5;
+            border-bottom-color: #4f46e5;
+            background: transparent;
+        }
+
+        .error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+            padding: 12px 16px;
+            border-radius: 8px;
+        }
+
+        .schedule-header {
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 16px;
+            margin-bottom: 24px;
+        }
+
+        .schedule-date {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1f2937;
+        }
+
+        .schedule-weekday {
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        .lesson {
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            transition: box-shadow 0.3s;
+        }
+
+        .lesson:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .lesson-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .lesson-number {
+            background: #e0e7ff;
+            color: #4338ca;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .lesson-time {
+            color: #6b7280;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .lesson-content {
+            margin-left: 44px;
+        }
+
+        .lesson-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .lesson-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .badge-type {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-partner {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-location {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .no-lessons {
+            text-align: center;
+            color: #6b7280;
+            padding: 40px;
+        }
+
+        .loading {
+            text-align: center;
+            color: #6b7280;
+            padding: 40px;
+        }
+
+        #scheduleContainer {
+            display: none;
+        }
+
+        #scheduleContainer.visible {
+            display: block;
+        }
+
+        @media (max-width: 640px) {
+            .controls {
+                grid-template-columns: 1fr;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>
+                <span class="icon">📅</span>
+                Расписание
+            </h1>
+
+            <div class="tab-buttons">
+                <button class="tab-button active" data-type="groups">Группы</button>
+                <button class="tab-button" data-type="teachers">Преподаватели</button>
+            </div>
+
+            <div class="controls">
+                <div class="input-group">
+                    <label for="clientSelect">Выберите</label>
+                    <select id="clientSelect">
+                        <option value="">Загрузка...</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="dateInput">Выберите дату</label>
+                    <input type="date" id="dateInput">
+                </div>
+
+                <div class="button-group">
+                    <button id="loadBtn">Показать расписание</button>
+                </div>
+            </div>
+
+            <div id="errorContainer"></div>
+        </div>
+
+        <div id="scheduleContainer" class="card"></div>
+    </div>
+
+    <script>
+        const dateInput = document.getElementById('dateInput');
+        const clientSelect = document.getElementById('clientSelect');
+        const loadBtn = document.getElementById('loadBtn');
+        const errorContainer = document.getElementById('errorContainer');
+        const scheduleContainer = document.getElementById('scheduleContainer');
+        const tabButtons = document.querySelectorAll('.tab-button');
+
+        let clientsData = { groups: [], teachers: [] };
+        let currentType = 'groups';
+
+        // Set today's date as default
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.value = today;
+
+        const weekDays = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
+
+        function getWeekDayName(weekDay) {
+            return weekDays[weekDay];
+        }
+
+        function showError(message) {
+            errorContainer.innerHTML = `<div class="error">${message}</div>`;
+            scheduleContainer.classList.remove('visible');
+        }
+
+        function clearError() {
+            errorContainer.innerHTML = '';
+        }
+
+        function populateSelect(type) {
+            const data = type === 'groups' ? clientsData.groups : clientsData.teachers;
+            clientSelect.innerHTML = '<option value="">Выберите из списка</option>';
+            
+            data.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item;
+                option.textContent = item;
+                clientSelect.appendChild(option);
+            });
+        }
+
+        function switchTab(type) {
+            currentType = type;
+            
+            tabButtons.forEach(btn => {
+                if (btn.dataset.type === type) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            populateSelect(type);
+            clearError();
+            scheduleContainer.classList.remove('visible');
+        }
+
+        tabButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                switchTab(btn.dataset.type);
+            });
+        });
+
+        async function loadClients() {
+            try {
+                const response = await fetch('https://app.omsktec.ru/api/schedule/clients');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ошибка! статус: ${response.status}`);
+                }
+
+                const data = await response.json();
+                clientsData = data;
+                populateSelect(currentType);
+            } catch (err) {
+                clientSelect.innerHTML = '<option value="">Ошибка загрузки</option>';
+                showError(`Не удалось загрузить список: ${err.message}`);
+            }
+        }
+
+        function renderSchedule(schedule, clientName) {
+            if (!schedule || !schedule.lessons || schedule.lessons.length === 0) {
+                scheduleContainer.innerHTML = `
+                    <div class="schedule-header">
+                        <div class="schedule-date">${clientName}</div>
+                        <div class="schedule-weekday">${schedule.date} - ${getWeekDayName(schedule.week_day)}</div>
+                    </div>
+                    <div class="no-lessons">Занятий нет</div>
+                `;
+                scheduleContainer.classList.add('visible');
+                return;
+            }
+
+            let html = `
+                <div class="schedule-header">
+                    <div class="schedule-date">${clientName}</div>
+                    <div class="schedule-weekday">${schedule.date} - ${getWeekDayName(schedule.week_day)}</div>
+                </div>
+            `;
+
+            schedule.lessons.forEach(lesson => {
+                html += `
+                    <div class="lesson">
+                        <div class="lesson-header">
+                            <div class="lesson-number">${lesson.number}</div>
+                            <div class="lesson-time">
+                                <span>🕐</span>
+                                <span>${lesson.time}</span>
+                            </div>
+                        </div>
+                `;
+
+                lesson.items.forEach(item => {
+                    html += `
+                        <div class="lesson-content">
+                            <div class="lesson-title">
+                                <span>📚</span>
+                                <span>${item.title}</span>
+                            </div>
+                            <div class="lesson-details">
+                                <span class="badge badge-type">${item.type}</span>
+                                <span class="badge badge-partner">${item.partner}</span>
+                                ${item.location ? `<span class="badge badge-location">📍 ${item.location}</span>` : ''}
+                            </div>
+                        </div>
+                    `;
+                });
+
+                html += '</div>';
+            });
+
+            scheduleContainer.innerHTML = html;
+            scheduleContainer.classList.add('visible');
+        }
+
+        async function loadSchedule() {
+            const selectedClient = clientSelect.value;
+            const selectedDate = dateInput.value;
+
+            if (!selectedClient) {
+                showError('Пожалуйста, выберите группу или преподавателя');
+                return;
+            }
+
+            if (!selectedDate) {
+                showError('Пожалуйста, выберите дату');
+                return;
+            }
+
+            clearError();
+            loadBtn.disabled = true;
+            loadBtn.textContent = 'Загрузка...';
+            scheduleContainer.innerHTML = '<div class="loading">Загрузка...</div>';
+            scheduleContainer.classList.add('visible');
+
+            try {
+                const clientTime = new Date(selectedDate).toISOString();
+                const url = `https://app.omsktec.ru/api/schedule?client_name=${encodeURIComponent(selectedClient)}`;
+                
+                const response = await fetch(url, {
+                    headers: {
+                        'X-CLIENT-TIME': clientTime
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ошибка! статус: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data.schedules && data.schedules.length > 0) {
+                    renderSchedule(data.schedules[0], selectedClient);
+                } else {
+                    scheduleContainer.innerHTML = '<div class="no-lessons">Расписание не найдено</div>';
+                    scheduleContainer.classList.add('visible');
+                }
+            } catch (err) {
+                showError(`Ошибка: ${err.message}`);
+            } finally {
+                loadBtn.disabled = false;
+                loadBtn.textContent = 'Показать расписание';
+            }
+        }
+
+        loadBtn.addEventListener('click', loadSchedule);
+        
+        dateInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                loadSchedule();
+            }
+        });
+
+        // Load clients on page load
+        loadClients();
+    </script>
+</body>
+</html>
