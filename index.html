@@ -1,1183 +1,631 @@
-<!-- Добавить группы -->
 <!doctype html>
 <html lang="ru">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Расписание</title>
-        <style>
-            * {
-                margin: 0;
-                padding: 0;
-                box-sizing: border-box;
-            }
-
-            body {
-                font-family:
-                    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-                    Oxygen, Ubuntu, Cantarell, sans-serif;
-                background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%);
-                min-height: 100vh;
-                padding: 20px;
-            }
-
-            .container {
-                max-width: 900px;
-                margin: 0 auto;
-            }
-
-            .card {
-                background: white;
-                border-radius: 16px;
-                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-                padding: 30px;
-                margin-bottom: 24px;
-            }
-
-            h1 {
-                font-size: 28px;
-                color: #1f2937;
-                margin-bottom: 24px;
-                display: flex;
-                align-items: center;
-                gap: 12px;
-            }
-
-            .icon {
-                color: #4f46e5;
-            }
-
-            .controls {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 16px;
-                margin-bottom: 16px;
-            }
-
-            .input-group {
-                display: flex;
-                flex-direction: column;
-                position: relative;
-            }
-
-            label {
-                display: block;
-                font-size: 14px;
-                font-weight: 500;
-                color: #374151;
-                margin-bottom: 8px;
-            }
-
-            input[type='date'],
-            input[type='text'],
-            select {
-                width: 100%;
-                padding: 10px 16px;
-                border: 1px solid #d1d5db;
-                border-radius: 8px;
-                font-size: 16px;
-                transition: all 0.3s;
-                background: white;
-            }
-
-            input[type='date']:focus,
-            input[type='text']:focus,
-            select:focus {
-                outline: none;
-                border-color: #4f46e5;
-                box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-            }
-
-            .autocomplete-list {
-                position: absolute;
-                top: 100%;
-                left: 0;
-                right: 0;
-                background: white;
-                border: 1px solid #d1d5db;
-                border-top: none;
-                border-radius: 0 0 8px 8px;
-                max-height: 300px;
-                overflow-y: auto;
-                z-index: 1000;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                display: none;
-            }
-
-            .autocomplete-list.visible {
-                display: block;
-            }
-
-            .autocomplete-item {
-                padding: 12px 16px;
-                cursor: pointer;
-                transition: background 0.2s;
-                border-bottom: 1px solid #f3f4f6;
-            }
-
-            .autocomplete-item:last-child {
-                border-bottom: none;
-            }
-
-            .autocomplete-item:hover {
-                background: #f9fafb;
-            }
-
-            .autocomplete-item.highlighted {
-                background: #eff6ff;
-            }
-
-            .autocomplete-item strong {
-                color: #4f46e5;
-            }
-
-            .no-results {
-                padding: 12px 16px;
-                color: #6b7280;
-                text-align: center;
-            }
-
-            .error {
-                background: #fef2f2;
-                border: 1px solid #fecaca;
-                color: #991b1b;
-                padding: 12px 16px;
-                border-radius: 8px;
-            }
-
-            .schedule-header {
-                border-bottom: 1px solid #e5e7eb;
-                padding-bottom: 16px;
-                margin-bottom: 24px;
-            }
-
-            .schedule-date {
-                font-size: 24px;
-                font-weight: bold;
-                color: #1f2937;
-            }
-
-            .schedule-weekday {
-                color: #6b7280;
-                margin-top: 4px;
-            }
-
-            .lesson {
-                border: 1px solid #e5e7eb;
-                border-radius: 12px;
-                padding: 20px;
-                margin-bottom: 16px;
-                transition: box-shadow 0.3s;
-            }
-
-            .lesson:hover {
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            }
-
-            .lesson-header {
-                display: flex;
-                align-items: center;
-                gap: 12px;
-                margin-bottom: 16px;
-            }
-
-            .lesson-number {
-                background: #e0e7ff;
-                color: #4338ca;
-                width: 32px;
-                height: 32px;
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-weight: bold;
-            }
-
-            .lesson-time {
-                color: #6b7280;
-                font-weight: 500;
-                display: flex;
-                align-items: center;
-                gap: 6px;
-            }
-
-            .lesson-content {
-                margin-left: 44px;
-            }
-
-            .lesson-title {
-                font-size: 18px;
-                font-weight: 600;
-                color: #1f2937;
-                margin-bottom: 12px;
-                display: flex;
-                align-items: flex-start;
-                gap: 8px;
-            }
-
-            .lesson-details {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 12px;
-            }
-
-            .badge {
-                padding: 6px 12px;
-                border-radius: 20px;
-                font-size: 14px;
-                font-weight: 500;
-            }
-
-            .badge-type {
-                background: #dbeafe;
-                color: #1e40af;
-            }
-
-            .badge-partner {
-                background: #d1fae5;
-                color: #065f46;
-            }
-
-            .badge-location {
-                background: #f3f4f6;
-                color: #374151;
-            }
-
-            .no-lessons {
-                text-align: center;
-                color: #6b7280;
-                padding: 40px;
-            }
-
-            .loading {
-                text-align: center;
-                color: #6b7280;
-                padding: 40px;
-            }
-
-            #scheduleContainer {
-                display: none;
-            }
-
-            #scheduleContainer.visible {
-                display: block;
-            }
-
-            /* Вкладки */
-            .tabs {
-                display: flex;
-                border-bottom: 1px solid #e5e7eb;
-                margin-bottom: 24px;
-                position: relative;
-            }
-
-            .tab-button {
-                padding: 12px 24px;
-                background: none;
-                border: none;
-                font-size: 16px;
-                font-weight: 500;
-                color: #6b7280;
-                cursor: pointer;
-                position: relative;
-                transition: color 0.3s;
-            }
-
-            .tab-button:hover {
-                color: #4f46e5;
-            }
-
-            .tab-button.active {
-                color: #4f46e5;
-            }
-
-            .tab-button.active::after {
-                content: '';
-                position: absolute;
-                bottom: -1px;
-                left: 0;
-                right: 0;
-                height: 2px;
-                background: #4f46e5;
-            }
-
-            .tab-content {
-                display: none;
-                animation: fadeIn 0.3s ease;
-            }
-
-            .tab-content.active {
-                display: block;
-            }
-
-            @keyframes fadeIn {
-                from {
-                    opacity: 0;
-                }
-                to {
-                    opacity: 1;
-                }
-            }
-
-            .discipline-selector {
-                margin-bottom: 24px;
-                display: none;
-            }
-
-            .discipline-selector.visible {
-                display: block;
-            }
-
-            .discipline-selector label {
-                display: block;
-                margin-bottom: 8px;
-                font-weight: 500;
-                color: #374151;
-            }
-
-            .subject-lesson {
-                border: 1px solid #e5e7eb;
-                border-radius: 12px;
-                padding: 20px;
-                margin-bottom: 16px;
-                background: white;
-            }
-
-            .subject-date {
-                font-size: 18px;
-                font-weight: 600;
-                color: #1f2937;
-                margin-bottom: 12px;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-            }
-
-            .subject-date span {
-                color: #6b7280;
-                font-size: 14px;
-                font-weight: normal;
-            }
-
-            @media (max-width: 640px) {
-                .controls {
-                    grid-template-columns: 1fr;
-                }
-
-                .button-group {
-                    flex-direction: column;
-                }
-            }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <div class="card">
-                <h1>
-                    <span class="icon">📅</span>
-                    Расписание
-                </h1>
-
-                <div class="tabs">
-                    <button class="tab-button active" data-tab="by-day">
-                        По дням
-                    </button>
-                    <button class="tab-button" data-tab="by-discipline">
-                        По дисциплине
-                    </button>
-                </div>
-
-                <div id="by-day" class="tab-content active">
-                    <div class="controls">
-                        <div class="input-group">
-                            <label for="clientInput">
-                                Группа или преподаватель
-                            </label>
-                            <input
-                                type="text"
-                                id="clientInput"
-                                placeholder="Начните вводить название..."
-                                autocomplete="off" />
-                            <div
-                                id="autocompleteList"
-                                class="autocomplete-list"></div>
-                        </div>
-
-                        <div class="input-group">
-                            <label for="dateInput">Выберите дату</label>
-                            <input type="date" id="dateInput" />
-                        </div>
-                    </div>
-
-                    <div id="errorContainer"></div>
-                </div>
-
-                <div id="by-discipline" class="tab-content">
-                    <div class="controls">
-                        <div class="input-group">
-                            <label for="teacherInput">Преподаватель</label>
-                            <input
-                                type="text"
-                                id="teacherInput"
-                                placeholder="Начните вводить ФИО..."
-                                autocomplete="off" />
-                            <div
-                                id="teacherAutocompleteList"
-                                class="autocomplete-list"></div>
-                        </div>
-                    </div>
-
-                    <div class="discipline-selector" id="disciplineSelector">
-                        <label for="disciplineSelect">
-                            Выберите дисциплину
-                        </label>
-                        <select id="disciplineSelect">
-                            <option value="">Выберите дисциплину</option>
-                        </select>
-                    </div>
-
-                    <div id="errorContainerDiscipline"></div>
-                </div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Расписание</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 900px; margin: 0 auto; }
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-bottom: 24px;
+        }
+        h1 {
+            font-size: 28px;
+            color: #1f2937;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .icon { color: #4f46e5; }
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+        input[type='date'], input[type='text'], select {
+            width: 100%;
+            padding: 10px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+            background: white;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+        .autocomplete-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #d1d5db;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+        .autocomplete-list.visible { display: block; }
+        .autocomplete-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: background 0.2s;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        .autocomplete-item:hover, .autocomplete-item.highlighted { background: #eff6ff; }
+        .autocomplete-item strong { color: #4f46e5; }
+        .error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+            padding: 12px 16px;
+            border-radius: 8px;
+        }
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 24px;
+        }
+        .tab-button {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            font-size: 16px;
+            font-weight: 500;
+            color: #6b7280;
+            cursor: pointer;
+            position: relative;
+            transition: color 0.3s;
+        }
+        .tab-button:hover { color: #4f46e5; }
+        .tab-button.active { color: #4f46e5; }
+        .tab-button.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #4f46e5;
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .selector { margin-bottom: 24px; display: none; }
+        .selector.visible { display: block; }
+        .lesson {
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+        .lesson-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .lesson-number {
+            background: #e0e7ff;
+            color: #4338ca;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        .lesson-content { margin-left: 44px; }
+        .lesson-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 12px;
+        }
+        .badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            margin-right: 8px;
+        }
+        .badge-type { background: #dbeafe; color: #1e40af; }
+        .badge-partner { background: #d1fae5; color: #065f46; }
+        .schedule-header {
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 16px;
+            margin-bottom: 24px;
+        }
+        .schedule-date {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1f2937;
+        }
+        .no-lessons, .loading {
+            text-align: center;
+            color: #6b7280;
+            padding: 40px;
+        }
+        @media (max-width: 640px) {
+            .controls { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1><span class="icon">📅</span>Расписание</h1>
+            
+            <div class="tabs">
+                <button class="tab-button active" data-tab="by-day">По дням</button>
+                <button class="tab-button" data-tab="by-discipline">По дисциплине</button>
             </div>
 
-            <div id="scheduleContainer" class="card"></div>
-            <div id="disciplineScheduleContainer" class="card"></div>
+            <div id="by-day" class="tab-content active">
+                <div class="controls">
+                    <div class="input-group">
+                        <label for="clientInput">Группа или преподаватель</label>
+                        <input type="text" id="clientInput" placeholder="Начните вводить..." autocomplete="off">
+                        <div id="autocompleteList" class="autocomplete-list"></div>
+                    </div>
+                    <div class="input-group">
+                        <label for="dateInput">Выберите дату</label>
+                        <input type="date" id="dateInput">
+                    </div>
+                </div>
+                <div id="errorContainer"></div>
+            </div>
+
+            <div id="by-discipline" class="tab-content">
+                <div class="controls">
+                    <div class="input-group">
+                        <label for="teacherInput">Преподаватель</label>
+                        <input type="text" id="teacherInput" placeholder="Начните вводить ФИО..." autocomplete="off">
+                        <div id="teacherAutocompleteList" class="autocomplete-list"></div>
+                    </div>
+                </div>
+                <div class="selector" id="disciplineSelector">
+                    <label for="disciplineSelect">Выберите дисциплину</label>
+                    <select id="disciplineSelect">
+                        <option value="">Выберите дисциплину</option>
+                    </select>
+                </div>
+                <div class="selector" id="groupSelector">
+                    <label for="groupSelect">Выберите группу</label>
+                    <select id="groupSelect">
+                        <option value="">Все группы</option>
+                    </select>
+                </div>
+                <div id="errorContainerDiscipline"></div>
+            </div>
         </div>
 
-        <script>
-            const dateInput = document.getElementById('dateInput')
-            const clientInput = document.getElementById('clientInput')
-            const teacherInput = document.getElementById('teacherInput')
-            const autocompleteList = document.getElementById('autocompleteList')
-            const teacherAutocompleteList = document.getElementById(
-                'teacherAutocompleteList',
-            )
-            const errorContainer = document.getElementById('errorContainer')
-            const errorContainerDiscipline = document.getElementById(
-                'errorContainerDiscipline',
-            )
-            const scheduleContainer =
-                document.getElementById('scheduleContainer')
-            const disciplineScheduleContainer = document.getElementById(
-                'disciplineScheduleContainer',
-            )
-            const disciplineSelector =
-                document.getElementById('disciplineSelector')
-            const disciplineSelect = document.getElementById('disciplineSelect')
-            const tabButtons = document.querySelectorAll('.tab-button')
-            const tabContents = document.querySelectorAll('.tab-content')
+        <div id="scheduleContainer" class="card" style="display:none"></div>
+        <div id="disciplineScheduleContainer" class="card" style="display:none"></div>
+    </div>
 
-            let allClients = []
-            let selectedClient = ''
-            let selectedTeacher = ''
-            let highlightedIndex = -1
-            let highlightedTeacherIndex = -1
-            let teacherScheduleData = null
-            let uniqueSubjects = []
+    <script>
+        const state = {
+            clients: [], teachers: [], selectedClient: '', selectedTeacher: '',
+            scheduleData: null, subjects: [], storage: {}
+        };
 
-            // Set today's date as default
-            const today = new Date().toISOString().split('T')[0]
-            dateInput.value = today
+        const weekDays = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];
 
-            const weekDays = [
-                'Понедельник',
-                'Вторник',
-                'Среда',
-                'Четверг',
-                'Пятница',
-                'Суббота',
-                'Воскресенье',
-            ]
+        // Storage functions
+        function save(key, val) { state.storage[key] = val; }
+        function load(key) { return state.storage[key] || ''; }
 
-            function getWeekDayName(weekDay) {
-                return weekDays[weekDay]
-            }
+        // Tab management
+        document.querySelectorAll('.tab-button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+                document.getElementById(btn.dataset.tab).classList.add('active');
+                btn.classList.add('active');
+                scheduleContainer.style.display = 'none';
+                disciplineScheduleContainer.style.display = 'none';
+            });
+        });
 
-            // Управление вкладками
-            tabButtons.forEach((button) => {
-                button.addEventListener('click', () => {
-                    const tabId = button.getAttribute('data-tab')
-
-                    // Скрыть все вкладки и убрать активный класс
-                    tabContents.forEach((content) => {
-                        content.classList.remove('active')
-                    })
-                    tabButtons.forEach((btn) => {
-                        btn.classList.remove('active')
-                    })
-
-                    // Показать выбранную вкладку
-                    document.getElementById(tabId).classList.add('active')
-                    button.classList.add('active')
-
-                    // Скрыть контейнеры расписания
-                    scheduleContainer.style.display = 'none'
-                    disciplineScheduleContainer.style.display = 'none'
-                })
-            })
-
-            function showError(message, container = errorContainer) {
-                container.innerHTML = `<div class="error">${message}</div>`
-                scheduleContainer.classList.remove('visible')
-                disciplineScheduleContainer.style.display = 'none'
-            }
-
-            function clearError(container = errorContainer) {
-                container.innerHTML = ''
-            }
-
-            function saveToLocalStorage(key, value) {
-                localStorage.setItem(key, value)
-            }
-
-            function loadFromLocalStorage(key) {
-                return localStorage.getItem(key)
-            }
-
-            function highlightMatch(text, query) {
-                const regex = new RegExp(`(${query})`, 'gi')
-                return text.replace(regex, '<strong>$1</strong>')
-            }
-
-            function filterClients(query) {
-                if (!query) return []
-
-                const lowerQuery = query.toLowerCase()
-                return allClients
-                    .filter((client) =>
-                        client.toLowerCase().includes(lowerQuery),
-                    )
-                    .slice(0, 50)
-            }
-
-            // Фильтрация только преподавателей
-            function filterTeachers(query) {
-                if (!query) return []
-
-                const lowerQuery = query.toLowerCase()
-                const teachers = allClients.filter((client) =>
-                    allTeachers.includes(client),
-                )
-                return teachers
-                    .filter((teacher) =>
-                        teacher.toLowerCase().includes(lowerQuery),
-                    )
-                    .slice(0, 50)
-            }
-
-            function selectClient(clientName) {
-                clientInput.value = clientName
-                selectedClient = clientName
-                autocompleteList.classList.remove('visible')
-                highlightedIndex = -1
-                saveToLocalStorage('lastClient', clientName)
-
-                // Auto-fetch schedule when client is selected
-                if (dateInput.value) {
-                    loadSchedule()
-                }
-            }
-
-            function selectTeacher(teacherName) {
-                teacherInput.value = teacherName
-                selectedTeacher = teacherName
-                teacherAutocompleteList.classList.remove('visible')
-                highlightedTeacherIndex = -1
-                saveToLocalStorage('lastTeacher', teacherName)
-
-                // Загружаем расписание преподавателя для извлечения дисциплин
-                loadTeacherScheduleForSubjects()
-            }
-
-            function renderAutocomplete(
-                items,
-                query,
-                listElement,
-                type = 'client',
-            ) {
-                if (items.length === 0) {
-                    listElement.innerHTML =
-                        '<div class="no-results">Ничего не найдено</div>'
-                    listElement.classList.add('visible')
-                    return
-                }
-
-                listElement.innerHTML = ''
-                items.forEach((item, index) => {
-                    const div = document.createElement('div')
-                    div.className = 'autocomplete-item'
-                    div.innerHTML = highlightMatch(item, query)
-                    div.dataset.index = index
-
-                    div.addEventListener('click', () => {
-                        if (type === 'teacher') {
-                            selectTeacher(item)
-                        } else {
-                            selectClient(item)
-                        }
-                    })
-
-                    listElement.appendChild(div)
-                })
-
-                listElement.classList.add('visible')
-            }
-
-            function updateHighlight(items, highlightedIndex) {
-                items.forEach((item, index) => {
-                    if (index === highlightedIndex) {
-                        item.classList.add('highlighted')
-                        item.scrollIntoView({ block: 'nearest' })
-                    } else {
-                        item.classList.remove('highlighted')
-                    }
-                })
-            }
-
-            // Обработчики для основного клиента
-            clientInput.addEventListener('input', (e) => {
-                const query = e.target.value.trim()
-                highlightedIndex = -1
-
+        // Autocomplete
+        function setupAutocomplete(input, list, onSelect, filterFn) {
+            let highlighted = -1;
+            
+            input.addEventListener('input', e => {
+                const query = e.target.value.trim();
+                highlighted = -1;
                 if (query.length < 1) {
-                    autocompleteList.classList.remove('visible')
-                    selectedClient = ''
-                    return
+                    list.classList.remove('visible');
+                    return;
                 }
+                const items = filterFn(query);
+                renderList(items, query, list, onSelect);
+            });
 
-                const filtered = filterClients(query)
-                renderAutocomplete(filtered, query, autocompleteList)
-            })
-
-            clientInput.addEventListener('keydown', (e) => {
-                const items =
-                    autocompleteList.querySelectorAll('.autocomplete-item')
-
+            input.addEventListener('keydown', e => {
+                const items = list.querySelectorAll('.autocomplete-item');
                 if (e.key === 'ArrowDown') {
-                    e.preventDefault()
-                    highlightedIndex = Math.min(
-                        highlightedIndex + 1,
-                        items.length - 1,
-                    )
-                    updateHighlight(items, highlightedIndex)
+                    e.preventDefault();
+                    highlighted = Math.min(highlighted + 1, items.length - 1);
+                    updateHighlight(items, highlighted);
                 } else if (e.key === 'ArrowUp') {
-                    e.preventDefault()
-                    highlightedIndex = Math.max(highlightedIndex - 1, -1)
-                    updateHighlight(items, highlightedIndex)
+                    e.preventDefault();
+                    highlighted = Math.max(highlighted - 1, -1);
+                    updateHighlight(items, highlighted);
                 } else if (e.key === 'Enter') {
-                    e.preventDefault()
-                    if (highlightedIndex >= 0 && items[highlightedIndex]) {
-                        const clientName = items[highlightedIndex].textContent
-                        selectClient(clientName)
+                    e.preventDefault();
+                    if (highlighted >= 0 && items[highlighted]) {
+                        onSelect(items[highlighted].textContent);
                     } else if (items.length > 0) {
-                        const clientName = items[0].textContent
-                        selectClient(clientName)
+                        onSelect(items[0].textContent);
                     }
                 } else if (e.key === 'Escape') {
-                    autocompleteList.classList.remove('visible')
-                    highlightedIndex = -1
+                    list.classList.remove('visible');
+                    highlighted = -1;
                 }
-            })
+            });
+        }
 
-            // Обработчики для преподавателя
-            teacherInput.addEventListener('input', (e) => {
-                const query = e.target.value.trim()
-                highlightedTeacherIndex = -1
-
-                if (query.length < 1) {
-                    teacherAutocompleteList.classList.remove('visible')
-                    selectedTeacher = ''
-                    disciplineSelector.classList.remove('visible')
-                    disciplineScheduleContainer.style.display = 'none'
-                    return
-                }
-
-                const filtered = filterTeachers(query)
-                renderAutocomplete(
-                    filtered,
-                    query,
-                    teacherAutocompleteList,
-                    'teacher',
-                )
-            })
-
-            teacherInput.addEventListener('keydown', (e) => {
-                const items =
-                    teacherAutocompleteList.querySelectorAll(
-                        '.autocomplete-item',
-                    )
-
-                if (e.key === 'ArrowDown') {
-                    e.preventDefault()
-                    highlightedTeacherIndex = Math.min(
-                        highlightedTeacherIndex + 1,
-                        items.length - 1,
-                    )
-                    updateHighlight(items, highlightedTeacherIndex)
-                } else if (e.key === 'ArrowUp') {
-                    e.preventDefault()
-                    highlightedTeacherIndex = Math.max(
-                        highlightedTeacherIndex - 1,
-                        -1,
-                    )
-                    updateHighlight(items, highlightedTeacherIndex)
-                } else if (e.key === 'Enter') {
-                    e.preventDefault()
-                    if (
-                        highlightedTeacherIndex >= 0 &&
-                        items[highlightedTeacherIndex]
-                    ) {
-                        const teacherName =
-                            items[highlightedTeacherIndex].textContent
-                        selectTeacher(teacherName)
-                    } else if (items.length > 0) {
-                        const teacherName = items[0].textContent
-                        selectTeacher(teacherName)
-                    }
-                } else if (e.key === 'Escape') {
-                    teacherAutocompleteList.classList.remove('visible')
-                    highlightedTeacherIndex = -1
-                }
-            })
-
-            // Close autocomplete when clicking outside
-            document.addEventListener('click', (e) => {
-                if (
-                    !clientInput.contains(e.target) &&
-                    !autocompleteList.contains(e.target)
-                ) {
-                    autocompleteList.classList.remove('visible')
-                    highlightedIndex = -1
-                }
-
-                if (
-                    !teacherInput.contains(e.target) &&
-                    !teacherAutocompleteList.contains(e.target)
-                ) {
-                    teacherAutocompleteList.classList.remove('visible')
-                    highlightedTeacherIndex = -1
-                }
-            })
-
-            let allTeachers = []
-
-            async function loadClients() {
-                try {
-                    const response = await fetch(
-                        'https://app.omsktec.ru/api/schedule/clients',
-                    )
-
-                    if (!response.ok) {
-                        throw new Error(
-                            `HTTP ошибка! статус: ${response.status}`,
-                        )
-                    }
-
-                    const data = await response.json()
-                    allClients = [...data.groups, ...data.teachers].sort()
-                    allTeachers = [...data.teachers].sort()
-
-                    // Load last client from localStorage
-                    const lastClient = loadFromLocalStorage('lastClient')
-                    if (lastClient) {
-                        clientInput.value = lastClient
-                        selectedClient = lastClient
-                    }
-
-                    // Load last teacher from localStorage
-                    const lastTeacher = loadFromLocalStorage('lastTeacher')
-                    if (lastTeacher) {
-                        teacherInput.value = lastTeacher
-                        selectedTeacher = lastTeacher
-                    }
-                } catch (err) {
-                    showError(`Не удалось загрузить список: ${err.message}`)
-                }
+        function renderList(items, query, listEl, onSelect) {
+            if (!items.length) {
+                listEl.innerHTML = '<div class="no-results">Ничего не найдено</div>';
+                listEl.classList.add('visible');
+                return;
             }
+            listEl.innerHTML = '';
+            items.forEach((item, i) => {
+                const div = document.createElement('div');
+                div.className = 'autocomplete-item';
+                div.innerHTML = item.replace(new RegExp(`(${query})`, 'gi'), '<strong>$1</strong>');
+                div.onclick = () => onSelect(item);
+                listEl.appendChild(div);
+            });
+            listEl.classList.add('visible');
+        }
 
-            function renderSchedule(schedule, clientName) {
-                if (
-                    !schedule ||
-                    !schedule.lessons ||
-                    schedule.lessons.length === 0
-                ) {
-                    scheduleContainer.innerHTML = `
-                    <div class="schedule-header">
-                        <div class="schedule-date">${clientName}</div>
-                        <div class="schedule-weekday">${schedule.date} - ${getWeekDayName(schedule.week_day)}</div>
-                    </div>
-                    <div class="no-lessons">Занятий нет</div>
-                `
-                    scheduleContainer.classList.add('visible')
-                    scheduleContainer.style.display = 'block'
-                    disciplineScheduleContainer.style.display = 'none'
-                    return
+        function updateHighlight(items, idx) {
+            items.forEach((item, i) => {
+                if (i === idx) {
+                    item.classList.add('highlighted');
+                    item.scrollIntoView({ block: 'nearest' });
+                } else {
+                    item.classList.remove('highlighted');
                 }
+            });
+        }
 
-                let html = `
-                <div class="schedule-header">
-                    <div class="schedule-date">${clientName}</div>
-                    <div class="schedule-weekday">${schedule.date} - ${getWeekDayName(schedule.week_day)}</div>
-                </div>
-            `
+        // Client autocomplete
+        setupAutocomplete(
+            clientInput,
+            autocompleteList,
+            name => {
+                clientInput.value = name;
+                state.selectedClient = name;
+                autocompleteList.classList.remove('visible');
+                save('lastClient', name);
+                if (dateInput.value) loadSchedule();
+            },
+            query => state.clients.filter(c => c.toLowerCase().includes(query.toLowerCase())).slice(0, 50)
+        );
 
-                schedule.lessons.forEach((lesson) => {
-                    html += `
-                    <div class="lesson">
+        // Teacher autocomplete
+        setupAutocomplete(
+            teacherInput,
+            teacherAutocompleteList,
+            name => {
+                teacherInput.value = name;
+                state.selectedTeacher = name;
+                teacherAutocompleteList.classList.remove('visible');
+                save('lastTeacher', name);
+                loadTeacherSchedule();
+            },
+            query => state.teachers.filter(t => t.toLowerCase().includes(query.toLowerCase())).slice(0, 50)
+        );
+
+        // Click outside to close
+        document.addEventListener('click', e => {
+            if (!clientInput.contains(e.target) && !autocompleteList.contains(e.target)) {
+                autocompleteList.classList.remove('visible');
+            }
+            if (!teacherInput.contains(e.target) && !teacherAutocompleteList.contains(e.target)) {
+                teacherAutocompleteList.classList.remove('visible');
+            }
+        });
+
+        // Load clients
+        async function loadClients() {
+            try {
+                const res = await fetch('https://app.omsktec.ru/api/schedule/clients');
+                const data = await res.json();
+                state.clients = [...data.groups, ...data.teachers].sort();
+                state.teachers = [...data.teachers].sort();
+                
+                const lastClient = load('lastClient');
+                if (lastClient) {
+                    clientInput.value = lastClient;
+                    state.selectedClient = lastClient;
+                }
+                
+                const lastTeacher = load('lastTeacher');
+                if (lastTeacher) {
+                    teacherInput.value = lastTeacher;
+                    state.selectedTeacher = lastTeacher;
+                }
+            } catch (err) {
+                showError('Не удалось загрузить список: ' + err.message);
+            }
+        }
+
+        // Load schedule for date
+        async function loadSchedule() {
+            const name = state.selectedClient || clientInput.value.trim();
+            const date = dateInput.value;
+            if (!name || !date) return;
+
+            scheduleContainer.innerHTML = '<div class="loading">Загрузка...</div>';
+            scheduleContainer.style.display = 'block';
+            disciplineScheduleContainer.style.display = 'none';
+
+            try {
+                const res = await fetch(`https://app.omsktec.ru/api/schedule?client_name=${encodeURIComponent(name)}`, {
+                    headers: { 'X-CLIENT-TIME': new Date(date).toISOString() }
+                });
+                const data = await res.json();
+                if (data.schedules && data.schedules.length) {
+                    renderSchedule(data.schedules[0], name);
+                } else {
+                    scheduleContainer.innerHTML = '<div class="no-lessons">Расписание не найдено</div>';
+                }
+            } catch (err) {
+                showError('Ошибка: ' + err.message);
+            }
+        }
+
+        function renderSchedule(schedule, name) {
+            let html = `<div class="schedule-header">
+                <div class="schedule-date">${name}</div>
+                <div style="color:#6b7280;margin-top:4px">${schedule.date} - ${weekDays[schedule.week_day]}</div>
+            </div>`;
+            
+            if (!schedule.lessons || !schedule.lessons.length) {
+                html += '<div class="no-lessons">Занятий нет</div>';
+            } else {
+                schedule.lessons.forEach(lesson => {
+                    html += `<div class="lesson">
                         <div class="lesson-header">
                             <div class="lesson-number">${lesson.number}</div>
-                            <div class="lesson-time">
-                                <span>🕐</span>
-                                <span>${lesson.time}</span>
-                            </div>
-                        </div>
-                `
-
-                    lesson.items.forEach((item) => {
-                        html += `
-                        <div class="lesson-content">
-                            <div class="lesson-title">
-                                <span>📚</span>
-                                <span>${item.title}</span>
-                            </div>
-                            <div class="lesson-details">
+                            <div style="color:#6b7280">🕐 ${lesson.time}</div>
+                        </div>`;
+                    lesson.items.forEach(item => {
+                        html += `<div class="lesson-content">
+                            <div class="lesson-title">📚 ${item.title}</div>
+                            <div>
                                 <span class="badge badge-type">${item.type}</span>
                                 <span class="badge badge-partner">${item.partner}</span>
-                                ${item.location ? `<span class="badge badge-location">📍 ${item.location}</span>` : ''}
+                                ${item.location ? `<span class="badge">${item.location}</span>` : ''}
                             </div>
-                        </div>
-                    `
-                    })
-
-                    html += '</div>'
-                })
-
-                scheduleContainer.innerHTML = html
-                scheduleContainer.classList.add('visible')
-                scheduleContainer.style.display = 'block'
-                disciplineScheduleContainer.style.display = 'none'
+                        </div>`;
+                    });
+                    html += '</div>';
+                });
             }
+            scheduleContainer.innerHTML = html;
+            scheduleContainer.style.display = 'block';
+        }
 
-            async function loadSchedule() {
-                const clientName = selectedClient || clientInput.value.trim()
-                const selectedDate = dateInput.value
+        // Load teacher schedule
+        async function loadTeacherSchedule() {
+            if (!state.selectedTeacher) return;
 
-                if (!clientName) {
-                    clearError()
-                    scheduleContainer.classList.remove('visible')
-                    return
+            disciplineSelector.classList.remove('visible');
+            groupSelector.classList.remove('visible');
+            disciplineScheduleContainer.style.display = 'none';
+
+            try {
+                const year = new Date().getFullYear();
+                const month = new Date().getMonth();
+                const startDate = new Date(year, month >= 8 ? 8 : 0, 1).toISOString();
+                
+                const res = await fetch(`https://app.omsktec.ru/api/schedule?client_name=${encodeURIComponent(state.selectedTeacher)}`, {
+                    headers: { 'X-CLIENT-TIME': startDate }
+                });
+                const data = await res.json();
+                state.scheduleData = data;
+
+                // Extract subjects
+                const subjectSet = new Set();
+                data.schedules.forEach(s => {
+                    s.lessons?.forEach(l => {
+                        l.items?.forEach(item => subjectSet.add(item.title));
+                    });
+                });
+                state.subjects = Array.from(subjectSet).sort();
+
+                // Populate discipline select
+                disciplineSelect.innerHTML = '<option value="">Выберите дисциплину</option>';
+                state.subjects.forEach(subj => {
+                    const opt = document.createElement('option');
+                    opt.value = subj;
+                    opt.textContent = subj;
+                    disciplineSelect.appendChild(opt);
+                });
+
+                disciplineSelector.classList.add('visible');
+
+                // Load last subject
+                const lastSubj = load('lastSubject');
+                if (lastSubj && state.subjects.includes(lastSubj)) {
+                    disciplineSelect.value = lastSubj;
+                    onSubjectChange(lastSubj);
                 }
-
-                if (!selectedDate) {
-                    clearError()
-                    scheduleContainer.classList.remove('visible')
-                    return
-                }
-
-                clearError()
-                scheduleContainer.innerHTML =
-                    '<div class="loading">Загрузка...</div>'
-                scheduleContainer.classList.add('visible')
-                scheduleContainer.style.display = 'block'
-
-                try {
-                    const clientTime = new Date(selectedDate).toISOString()
-                    const url = `https://app.omsktec.ru/api/schedule?client_name=${encodeURIComponent(clientName)}`
-
-                    const response = await fetch(url, {
-                        headers: {
-                            'X-CLIENT-TIME': clientTime,
-                        },
-                    })
-
-                    if (!response.ok) {
-                        throw new Error(
-                            `HTTP ошибка! статус: ${response.status}`,
-                        )
-                    }
-
-                    const data = await response.json()
-
-                    if (data.schedules && data.schedules.length > 0) {
-                        renderSchedule(data.schedules[0], clientName)
-                        saveToLocalStorage('lastClient', clientName)
-                    } else {
-                        scheduleContainer.innerHTML =
-                            '<div class="no-lessons">Расписание не найдено</div>'
-                        scheduleContainer.classList.add('visible')
-                        scheduleContainer.style.display = 'block'
-                    }
-                } catch (err) {
-                    showError(`Ошибка: ${err.message}`)
-                }
+            } catch (err) {
+                showError('Ошибка загрузки: ' + err.message, errorContainerDiscipline);
             }
+        }
 
-            // Функция для загрузки расписания преподавателя для извлечения дисциплин
-            async function loadTeacherScheduleForSubjects() {
-                if (!selectedTeacher) {
-                    disciplineSelector.classList.remove('visible')
-                    return
-                }
-
-                clearError(errorContainerDiscipline)
-                disciplineSelector.classList.remove('visible')
-                disciplineScheduleContainer.style.display = 'none'
-
-                try {
-                    // Используем 1 сентября текущего года
-                    const currentYear = new Date().getFullYear()
-                    const septemberFirst = new Date(
-                        currentYear,
-                        8,
-                        1,
-                    ).toISOString() // Месяцы 0-based
-
-                    const url = `https://app.omsktec.ru/api/schedule?client_name=${encodeURIComponent(selectedTeacher)}`
-
-                    const response = await fetch(url, {
-                        headers: {
-                            'X-CLIENT-TIME': septemberFirst,
-                        },
-                    })
-
-                    if (!response.ok) {
-                        throw new Error(
-                            `HTTP ошибка! статус: ${response.status}`,
-                        )
-                    }
-
-                    const data = await response.json()
-                    teacherScheduleData = data
-
-                    // Извлекаем уникальные дисциплины
-                    extractUniqueSubjects(data)
-
-                    // Заполняем выпадающий список
-                    populateDisciplineSelect()
-
-                    // Показываем селектор дисциплин
-                    disciplineSelector.classList.add('visible')
-                } catch (err) {
-                    showError(
-                        `Ошибка загрузки расписания: ${err.message}`,
-                        errorContainerDiscipline,
-                    )
-                }
+        // Subject change
+        disciplineSelect.addEventListener('change', e => {
+            const subj = e.target.value;
+            if (subj) {
+                save('lastSubject', subj);
+                onSubjectChange(subj);
+            } else {
+                disciplineScheduleContainer.style.display = 'none';
+                groupSelector.classList.remove('visible');
             }
+        });
 
-            // Извлечение уникальных дисциплин из расписания
-            function extractUniqueSubjects(data) {
-                uniqueSubjects = []
-
-                if (!data.schedules || data.schedules.length === 0) {
-                    return
-                }
-
-                const subjectSet = new Set()
-
-                data.schedules.forEach((schedule) => {
-                    if (schedule.lessons && schedule.lessons.length > 0) {
-                        schedule.lessons.forEach((lesson) => {
-                            if (lesson.items && lesson.items.length > 0) {
-                                lesson.items.forEach((item) => {
-                                    // // Очищаем название от номеров вроде "1.", "2." в начале
-                                    // const cleanTitle = item.title
-                                    //     .replace(/^\d+\.\s*/, '')
-                                    //     .trim()
-                                    // if (cleanTitle) {
-                                    subjectSet.add(item.title)
-                                    // }
-                                })
-                            }
-                        })
-                    }
-                })
-
-                uniqueSubjects = Array.from(subjectSet).sort()
-            }
-
-            // Заполнение выпадающего списка дисциплин
-            function populateDisciplineSelect() {
-                disciplineSelect.innerHTML =
-                    '<option value="">Выберите дисциплину</option>'
-
-                uniqueSubjects.forEach((subject) => {
-                    const option = document.createElement('option')
-                    option.value = subject
-                    option.textContent = subject
-                    disciplineSelect.appendChild(option)
-                })
-
-                // Загружаем последнюю выбранную дисциплину из localStorage
-                const lastSubject = loadFromLocalStorage('lastSubject')
-                if (lastSubject && uniqueSubjects.includes(lastSubject)) {
-                    disciplineSelect.value = lastSubject
-                    // Автоматически загружаем расписание по выбранной дисциплине
-                    loadDisciplineSchedule(lastSubject)
-                }
-            }
-
-            // Обработчик выбора дисциплины
-            disciplineSelect.addEventListener('change', (e) => {
-                const selectedSubject = e.target.value
-                if (selectedSubject) {
-                    saveToLocalStorage('lastSubject', selectedSubject)
-                    loadDisciplineSchedule(selectedSubject)
+        function onSubjectChange(subject) {
+            const groups = getGroups(subject);
+            if (groups.length > 1) {
+                groupSelect.innerHTML = '<option value="">Все группы</option>';
+                groups.forEach(g => {
+                    const opt = document.createElement('option');
+                    opt.value = g;
+                    opt.textContent = g;
+                    groupSelect.appendChild(opt);
+                });
+                groupSelector.classList.add('visible');
+                
+                const lastGroup = load('lastGroup');
+                if (lastGroup && groups.includes(lastGroup)) {
+                    groupSelect.value = lastGroup;
+                    loadDisciplineSchedule(subject, lastGroup);
                 } else {
-                    disciplineScheduleContainer.style.display = 'none'
+                    loadDisciplineSchedule(subject, '');
                 }
-            })
+            } else {
+                groupSelector.classList.remove('visible');
+                loadDisciplineSchedule(subject, '');
+            }
+        }
 
-            // Загрузка расписания по дисциплине
-            async function loadDisciplineSchedule(subject) {
-                if (!teacherScheduleData || !subject) {
-                    return
+        groupSelect.addEventListener('change', e => {
+            const group = e.target.value;
+            if (group) save('lastGroup', group);
+            loadDisciplineSchedule(disciplineSelect.value, group);
+        });
+
+        function getGroups(subject) {
+            const groups = new Set();
+            state.scheduleData.schedules.forEach(s => {
+                s.lessons?.forEach(l => {
+                    l.items?.forEach(item => {
+                        if (item.title === subject) groups.add(item.partner);
+                    });
+                });
+            });
+            return Array.from(groups).sort();
+        }
+
+        function loadDisciplineSchedule(subject, group = '') {
+            const filtered = [];
+            state.scheduleData.schedules.forEach(s => {
+                const dayLessons = [];
+                s.lessons?.forEach(l => {
+                    const items = l.items?.filter(i => 
+                        i.title === subject && (!group || i.partner === group)
+                    );
+                    if (items && items.length) {
+                        dayLessons.push({ ...l, items });
+                    }
+                });
+                if (dayLessons.length) {
+                    filtered.push({ date: s.date, week_day: s.week_day, lessons: dayLessons });
                 }
+            });
 
-                clearError(errorContainerDiscipline)
-                disciplineScheduleContainer.innerHTML =
-                    '<div class="loading">Загрузка...</div>'
-                disciplineScheduleContainer.style.display = 'block'
-                scheduleContainer.style.display = 'none'
+            renderDisciplineSchedule(filtered, subject, group);
+        }
 
-                try {
-                    // Фильтруем занятия по выбранной дисциплине
-                    const filteredLessons = []
+        function renderDisciplineSchedule(days, subject, group) {
+            const groupInfo = group ? ` (${group})` : '';
+            let html = `<div class="schedule-header">
+                <div class="schedule-date">${state.selectedTeacher}</div>
+                <div style="color:#6b7280;margin-top:4px">Дисциплина: ${subject}${groupInfo}</div>
+            </div>`;
 
-                    teacherScheduleData.schedules.forEach((schedule) => {
-                        const dayLessons = []
-
-                        if (schedule.lessons && schedule.lessons.length > 0) {
-                            schedule.lessons.forEach((lesson) => {
-                                if (lesson.items && lesson.items.length > 0) {
-                                    const matchingItems = lesson.items.filter(
-                                        (item) => {
-                                            // const cleanTitle = item.title
-                                            //     .replace(/^\d+\.\s*/, '')
-                                            //     .trim()
-                                            // return cleanTitle === subject
-                                            return item.title === subject
-                                        },
-                                    )
-
-                                    if (matchingItems.length > 0) {
-                                        dayLessons.push({
-                                            ...lesson,
-                                            items: matchingItems,
-                                        })
-                                    }
-                                }
-                            })
-                        }
-
-                        if (dayLessons.length > 0) {
-                            filteredLessons.push({
-                                date: schedule.date,
-                                week_day: schedule.week_day,
-                                lessons: dayLessons,
-                            })
-                        }
-                    })
-
-                    // Отображаем результат
-                    renderDisciplineSchedule(filteredLessons, subject)
-                } catch (err) {
-                    showError(
-                        `Ошибка: ${err.message}`,
-                        errorContainerDiscipline,
-                    )
-                }
+            if (!days.length) {
+                html += '<div class="no-lessons">Занятий не найдено</div>';
+            } else {
+                days.forEach(day => {
+                    html += `<div style="border:1px solid #e5e7eb;border-radius:12px;padding:20px;margin-bottom:16px">
+                        <div style="font-size:18px;font-weight:600;margin-bottom:12px">
+                            📅 ${day.date} (${weekDays[day.week_day]}) [${day.lessons.length}]
+                        </div>`;
+                    day.lessons.forEach(l => {
+                        html += `<div class="lesson">
+                            <div class="lesson-header">
+                                <div class="lesson-number">${l.number}</div>
+                                <div style="color:#6b7280">🕐 ${l.time}</div>
+                            </div>`;
+                        l.items.forEach(item => {
+                            html += `<div class="lesson-content">
+                                <div class="lesson-title">📚 ${item.title}</div>
+                                <div>
+                                    <span class="badge badge-type">${item.type}</span>
+                                    <span class="badge badge-partner">${item.partner}</span>
+                                    ${item.location ? `<span class="badge">${item.location}</span>` : ''}
+                                </div>
+                            </div>`;
+                        });
+                        html += '</div>';
+                    });
+                    html += '</div>';
+                });
             }
 
-            // Отображение расписания по дисциплине
-            function renderDisciplineSchedule(filteredLessons, subject) {
-                if (!filteredLessons || filteredLessons.length === 0) {
-                    disciplineScheduleContainer.innerHTML = `
-                        <div class="schedule-header">
-                            <div class="schedule-date">${selectedTeacher}</div>
-                            <div class="schedule-weekday">Дисциплина: ${subject}</div>
-                        </div>
-                        <div class="no-lessons">Занятий по данной дисциплине не найдено</div>
-                    `
-                    disciplineScheduleContainer.style.display = 'block'
-                    scheduleContainer.style.display = 'none'
-                    return
-                }
+            disciplineScheduleContainer.innerHTML = html;
+            disciplineScheduleContainer.style.display = 'block';
+            scheduleContainer.style.display = 'none';
+        }
 
-                let html = `
-                    <div class="schedule-header">
-                        <div class="schedule-date">${selectedTeacher}</div>
-                        <div class="schedule-weekday">Дисциплина: ${subject}</div>
-                    </div>
-                `
+        function showError(msg, container = errorContainer) {
+            container.innerHTML = `<div class="error">${msg}</div>`;
+        }
 
-                filteredLessons.forEach((day) => {
-                    html += `
-                        <div class="subject-lesson">
-                            <div class="subject-date">
-                                <span>📅</span>
-                                ${day.date} (${getWeekDayName(day.week_day)}) [${day.lessons.length}]
-                            </div>
-                    `
+        // Init
+        dateInput.value = new Date().toISOString().split('T')[0];
+        dateInput.addEventListener('change', () => {
+            if (state.selectedClient || clientInput.value.trim()) loadSchedule();
+        });
 
-                    day.lessons.forEach((lesson) => {
-                        html += `
-                            <div class="lesson">
-                                <div class="lesson-header">
-                                    <div class="lesson-number">${lesson.number}</div>
-                                    <div class="lesson-time">
-                                        <span>🕐</span>
-                                        <span>${lesson.time}</span>
-                                    </div>
-                                </div>
-                        `
-
-                        lesson.items.forEach((item) => {
-                            html += `
-                                <div class="lesson-content">
-                                    <div class="lesson-title">
-                                        <span>📚</span>
-                                        <span>${item.title}</span>
-                                    </div>
-                                    <div class="lesson-details">
-                                        <span class="badge badge-type">${item.type}</span>
-                                        <span class="badge badge-partner">${item.partner}</span>
-                                        ${item.location ? `<span class="badge badge-location">📍 ${item.location}</span>` : ''}
-                                    </div>
-                                </div>
-                            `
-                        })
-
-                        html += '</div>'
-                    })
-
-                    html += '</div>'
-                })
-
-                disciplineScheduleContainer.innerHTML = html
-                disciplineScheduleContainer.style.display = 'block'
-                scheduleContainer.style.display = 'none'
-            }
-
-            // Auto-fetch when date changes
-            dateInput.addEventListener('change', () => {
-                if (selectedClient || clientInput.value.trim()) {
-                    loadSchedule()
-                }
-            })
-
-            // Load clients on page load
-            loadClients().then(() => {
-                // Auto-load schedule if client was saved in localStorage
-                if (selectedClient && dateInput.value) {
-                    loadSchedule()
-                }
-
-                // Auto-load teacher schedule if teacher was saved in localStorage
-                if (selectedTeacher) {
-                    loadTeacherScheduleForSubjects()
-                }
-            })
-        </script>
-    </body>
+        loadClients().then(() => {
+            if (state.selectedClient && dateInput.value) loadSchedule();
+            if (state.selectedTeacher) loadTeacherSchedule();
+        });
+    </script>
+</body>
 </html>
