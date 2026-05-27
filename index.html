@@ -1,18 +1,31 @@
 <!doctype html>
 <html lang="ru">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Расписание</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-family:
+                -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+                Oxygen, Ubuntu, Cantarell, sans-serif;
             background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%);
             min-height: 100vh;
             padding: 20px;
         }
-        .container { max-width: 900px; margin: 0 auto; }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
         .card {
             background: white;
             border-radius: 16px;
@@ -20,6 +33,7 @@
             padding: 30px;
             margin-bottom: 24px;
         }
+
         h1 {
             font-size: 28px;
             color: #1f2937;
@@ -28,18 +42,24 @@
             align-items: center;
             gap: 12px;
         }
-        .icon { color: #4f46e5; }
+
+        .icon {
+            color: #4f46e5;
+        }
+
         .controls {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 16px;
             margin-bottom: 16px;
         }
+
         .input-group {
             display: flex;
             flex-direction: column;
             position: relative;
         }
+
         label {
             display: block;
             font-size: 14px;
@@ -47,7 +67,10 @@
             color: #374151;
             margin-bottom: 8px;
         }
-        input[type='date'], input[type='text'], select {
+
+        input[type='date'],
+        input[type='text'],
+        select {
             width: 100%;
             padding: 10px 16px;
             border: 1px solid #d1d5db;
@@ -56,11 +79,14 @@
             transition: all 0.3s;
             background: white;
         }
-        input:focus, select:focus {
+
+        input:focus,
+        select:focus {
             outline: none;
             border-color: #4f46e5;
             box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
         }
+
         .autocomplete-list {
             position: absolute;
             top: 100%;
@@ -76,15 +102,27 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             display: none;
         }
-        .autocomplete-list.visible { display: block; }
+
+        .autocomplete-list.visible {
+            display: block;
+        }
+
         .autocomplete-item {
             padding: 12px 16px;
             cursor: pointer;
             transition: background 0.2s;
             border-bottom: 1px solid #f3f4f6;
         }
-        .autocomplete-item:hover, .autocomplete-item.highlighted { background: #eff6ff; }
-        .autocomplete-item strong { color: #4f46e5; }
+
+        .autocomplete-item:hover,
+        .autocomplete-item.highlighted {
+            background: #eff6ff;
+        }
+
+        .autocomplete-item strong {
+            color: #4f46e5;
+        }
+
         .error {
             background: #fef2f2;
             border: 1px solid #fecaca;
@@ -92,11 +130,13 @@
             padding: 12px 16px;
             border-radius: 8px;
         }
+
         .tabs {
             display: flex;
             border-bottom: 1px solid #e5e7eb;
             margin-bottom: 24px;
         }
+
         .tab-button {
             padding: 12px 24px;
             background: none;
@@ -108,8 +148,15 @@
             position: relative;
             transition: color 0.3s;
         }
-        .tab-button:hover { color: #4f46e5; }
-        .tab-button.active { color: #4f46e5; }
+
+        .tab-button:hover {
+            color: #4f46e5;
+        }
+
+        .tab-button.active {
+            color: #4f46e5;
+        }
+
         .tab-button.active::after {
             content: '';
             position: absolute;
@@ -119,22 +166,38 @@
             height: 2px;
             background: #4f46e5;
         }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        .selector { margin-bottom: 24px; display: none; }
-        .selector.visible { display: block; }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .selector {
+            margin-bottom: 24px;
+            display: none;
+        }
+
+        .selector.visible {
+            display: block;
+        }
+
         .lesson {
             border: 1px solid #e5e7eb;
             border-radius: 12px;
             padding: 20px;
             margin-bottom: 16px;
         }
+
         .lesson-header {
             display: flex;
             align-items: center;
             gap: 12px;
             margin-bottom: 16px;
         }
+
         .lesson-number {
             background: #e0e7ff;
             color: #4338ca;
@@ -146,13 +209,18 @@
             justify-content: center;
             font-weight: bold;
         }
-        .lesson-content { margin-left: 44px; }
+
+        .lesson-content {
+            margin-left: 44px;
+        }
+
         .lesson-title {
             font-size: 18px;
             font-weight: 600;
             color: #1f2937;
             margin-bottom: 12px;
         }
+
         .badge {
             padding: 6px 12px;
             border-radius: 20px;
@@ -160,48 +228,73 @@
             font-weight: 500;
             margin-right: 8px;
         }
-        .badge-type { background: #dbeafe; color: #1e40af; }
-        .badge-partner { background: #d1fae5; color: #065f46; }
+
+        .badge-type {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-partner {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
         .schedule-header {
             border-bottom: 1px solid #e5e7eb;
             padding-bottom: 16px;
             margin-bottom: 24px;
         }
+
         .schedule-date {
             font-size: 24px;
             font-weight: bold;
             color: #1f2937;
         }
-        .no-lessons, .loading {
+
+        .no-lessons,
+        .loading {
             text-align: center;
             color: #6b7280;
             padding: 40px;
         }
+
         @media (max-width: 640px) {
-            .controls { grid-template-columns: 1fr; }
+            .controls {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="card">
-            <h1><span class="icon">📅</span>Расписание</h1>
-            
+            <h1>
+                <span class="icon">📅</span>
+                Расписание
+            </h1>
+
             <div class="tabs">
-                <button class="tab-button active" data-tab="by-day">По дням</button>
-                <button class="tab-button" data-tab="by-discipline">По дисциплине</button>
+                <button class="tab-button active" data-tab="by-day">
+                    По дням
+                </button>
+                <button class="tab-button" data-tab="by-discipline">
+                    По дисциплине
+                </button>
             </div>
 
             <div id="by-day" class="tab-content active">
                 <div class="controls">
                     <div class="input-group">
-                        <label for="clientInput">Группа или преподаватель</label>
-                        <input type="text" id="clientInput" placeholder="Начните вводить..." autocomplete="off">
+                        <label for="clientInput">
+                            Группа или преподаватель
+                        </label>
+                        <input type="text" id="clientInput" placeholder="Начните вводить..." autocomplete="off" />
                         <div id="autocompleteList" class="autocomplete-list"></div>
                     </div>
                     <div class="input-group">
                         <label for="dateInput">Выберите дату</label>
-                        <input type="date" id="dateInput">
+                        <input type="date" id="dateInput" />
                     </div>
                 </div>
                 <div id="errorContainer"></div>
@@ -211,12 +304,20 @@
                 <div class="controls">
                     <div class="input-group">
                         <label for="teacherInput">Преподаватель</label>
-                        <input type="text" id="teacherInput" placeholder="Начните вводить ФИО..." autocomplete="off">
+                        <input type="text" id="teacherInput" placeholder="Начните вводить ФИО..." autocomplete="off" />
                         <div id="teacherAutocompleteList" class="autocomplete-list"></div>
                     </div>
                 </div>
+                <div class="selector" id="semesterSelector">
+                    <label for="semesterSelect">Выберите семестр</label>
+                    <select id="semesterSelect">
+                        <option value="">Выберите семестер</option>
+                    </select>
+                </div>
                 <div class="selector" id="disciplineSelector">
-                    <label for="disciplineSelect">Выберите дисциплину</label>
+                    <label for="disciplineSelect">
+                        Выберите дисциплину
+                    </label>
                     <select id="disciplineSelect">
                         <option value="">Выберите дисциплину</option>
                     </select>
@@ -231,39 +332,339 @@
             </div>
         </div>
 
-        <div id="scheduleContainer" class="card" style="display:none"></div>
-        <div id="disciplineScheduleContainer" class="card" style="display:none"></div>
+        <div id="scheduleContainer" class="card" style="display: none"></div>
+        <div id="disciplineScheduleContainer" class="card" style="display: none"></div>
     </div>
 
     <script>
         const state = {
-            clients: [], teachers: [], selectedClient: '', selectedTeacher: '',
-            scheduleData: null, subjects: [], storage: {}
-        };
+            clients: [],
+            teachers: [],
+            selectedClient: '',
+            selectedTeacher: '',
+            scheduleData: null,       // полные данные по преподавателю (отфильтрованные по семестру)
+            subjects: [],
+            storage: {},
+            currentSemester: null,    // текущий выбранный семестр { value, label, startDate, endDate }
+        }
 
-        const weekDays = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];
+        const weekDays = [
+            'Понедельник',
+            'Вторник',
+            'Среда',
+            'Четверг',
+            'Пятница',
+            'Суббота',
+            'Воскресенье',
+        ]
 
-        // Storage functions
-        function save(key, val) { state.storage[key] = val; }
-        function load(key) { return state.storage[key] || ''; }
+        // --- Хранилище (localStorage имитация через объект) ---
+        function save(key, val) {
+            state.storage[key] = val
+            localStorage.setItem(key, val)
+        }
+        function load(key) {
+            if (state.storage[key]) return state.storage[key]
+            const fromStorage = localStorage.getItem(key)
+            if (fromStorage) state.storage[key] = fromStorage
+            return state.storage[key] || ''
+        }
 
-        // Tab management
-        document.querySelectorAll('.tab-button').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
-                document.getElementById(btn.dataset.tab).classList.add('active');
-                btn.classList.add('active');
-                scheduleContainer.style.display = 'none';
-                disciplineScheduleContainer.style.display = 'none';
+        // --- Генерация списка семестров с датами ---
+        function generateSemesters() {
+            const now = new Date();
+            const currentYear = now.getFullYear();
+            const currentMonth = now.getMonth();
+            const startYear = 2025;
+            const semesters = [];
+
+            for (let year = startYear; year <= currentYear; year++) {
+                // 1 семестр: январь – июль
+                semesters.push({
+                    value: `${year}-1`,
+                    label: `${year} — 1 семестр (янв–июл)`,
+                    startDate: `${year}-01-01`,
+                    endDate: `${year}-07-31`
+                });
+
+                // 2 семестр: сентябрь – декабрь (если год меньше текущего или месяц >= сентябрь)
+                const canShowSecond = (year < currentYear) || (currentMonth >= 8);
+                if (canShowSecond) {
+                    semesters.push({
+                        value: `${year}-2`,
+                        label: `${year} — 2 семестр (сен–дек)`,
+                        startDate: `${year}-09-01`,
+                        endDate: `${year}-12-31`
+                    });
+                }
+            }
+            // сортируем от новых к старым (последний семестр первым)
+            return semesters.reverse();
+        }
+
+        function getSemesterByValue(value) {
+            return generateSemesters().find(s => s.value === value);
+        }
+
+        function populateSemesterSelect() {
+            const semesters = generateSemesters();
+            const select = document.getElementById('semesterSelect');
+            select.innerHTML = '<option value="">— Выберите семестр —</option>';
+            semesters.forEach(s => {
+                const opt = document.createElement('option');
+                opt.value = s.value;
+                opt.textContent = s.label;
+                select.appendChild(opt);
             });
+            // выбрать последний (текущий) семестр
+            if (semesters.length) {
+                select.value = semesters[0].value;
+                state.currentSemester = semesters[0];
+            } else {
+                state.currentSemester = null;
+            }
+        }
+
+        // --- Загрузка расписания для преподавателя с учётом выбранного семестра ---
+        async function loadTeacherScheduleForSemester() {
+            if (!state.selectedTeacher) return;
+            if (!state.currentSemester) {
+                showError('Семестр не выбран', errorContainerDiscipline);
+                return;
+            }
+
+            const disciplineSelector = document.getElementById('disciplineSelector');
+            const groupSelector = document.getElementById('groupSelector');
+            const disciplineScheduleContainer = document.getElementById('disciplineScheduleContainer');
+
+            disciplineSelector.classList.remove('visible');
+            groupSelector.classList.remove('visible');
+            disciplineScheduleContainer.style.display = 'none';
+
+            try {
+                // Отправляем начало семестра в UTC, чтобы сервер вернул данные в правильной временной зоне
+                const startDateISO = new Date(state.currentSemester.startDate + 'T00:00:00').toISOString();
+                const res = await fetch(
+                    `https://app.omsktec.ru/api/schedule?client_name=${encodeURIComponent(state.selectedTeacher)}`,
+                    { headers: { 'X-CLIENT-TIME': startDateISO } }
+                );
+                const data = await res.json();
+
+                // Фильтруем расписание по датам семестра (на случай, если сервер вернул лишние дни)
+                const filteredSchedules = data.schedules.filter(schedule => {
+                    return schedule.date >= state.currentSemester.startDate && schedule.date <= state.currentSemester.endDate;
+                });
+                state.scheduleData = { ...data, schedules: filteredSchedules };
+
+                // Извлечь уникальные дисциплины из отфильтрованных данных
+                const subjectSet = new Set();
+                state.scheduleData.schedules.forEach(s => {
+                    s.lessons?.forEach(l => {
+                        l.items?.forEach(item => subjectSet.add(item.title));
+                    });
+                });
+                state.subjects = Array.from(subjectSet).sort();
+
+                const disciplineSelect = document.getElementById('disciplineSelect');
+                disciplineSelect.innerHTML = '<option value="">— Выберите дисциплину —</option>';
+                state.subjects.forEach(subj => {
+                    const opt = document.createElement('option');
+                    opt.value = subj;
+                    opt.textContent = subj;
+                    disciplineSelect.appendChild(opt);
+                });
+
+                // Показать селекторы
+                document.getElementById('semesterSelector').classList.add('visible');
+                disciplineSelector.classList.add('visible');
+
+                // Восстановить последнюю выбранную дисциплину
+                const lastSubj = load('lastSubject');
+                if (lastSubj && state.subjects.includes(lastSubj)) {
+                    disciplineSelect.value = lastSubj;
+                    onSubjectChange(lastSubj);
+                } else if (state.subjects.length) {
+                    disciplineSelect.value = state.subjects[0];
+                    onSubjectChange(state.subjects[0]);
+                } else {
+                    disciplineScheduleContainer.innerHTML = '<div class="no-lessons">Нет дисциплин за выбранный семестр</div>';
+                    disciplineScheduleContainer.style.display = 'block';
+                }
+
+            } catch (err) {
+                showError('Ошибка загрузки: ' + err.message, errorContainerDiscipline);
+            }
+        }
+
+        // --- Обработчик смены семестра ---
+        const semesterSelect = document.getElementById('semesterSelect');
+        if (semesterSelect) {
+            semesterSelect.addEventListener('change', (e) => {
+                const semValue = e.target.value;
+                if (semValue) {
+                    const semester = getSemesterByValue(semValue);
+                    if (semester) {
+                        state.currentSemester = semester;
+                        if (state.selectedTeacher) {
+                            loadTeacherScheduleForSemester();
+                        }
+                    }
+                } else {
+                    state.currentSemester = null;
+                    document.getElementById('disciplineSelector').classList.remove('visible');
+                    document.getElementById('groupSelector').classList.remove('visible');
+                    document.getElementById('disciplineScheduleContainer').style.display = 'none';
+                }
+            });
+        }
+
+        // --- Функции для работы с дисциплинами и группами ---
+        function getGroups(subject) {
+            const groups = new Set();
+            if (!state.scheduleData) return [];
+            state.scheduleData.schedules.forEach(s => {
+                s.lessons?.forEach(l => {
+                    l.items?.forEach(item => {
+                        if (item.title === subject) groups.add(item.partner);
+                    });
+                });
+            });
+            return Array.from(groups).sort();
+        }
+
+        function onSubjectChange(subject) {
+            if (!subject) return;
+            const groups = getGroups(subject);
+            const groupSelect = document.getElementById('groupSelect');
+            const groupSelector = document.getElementById('groupSelector');
+            if (groups.length > 1) {
+                groupSelect.innerHTML = '<option value="">— Все группы —</option>';
+                groups.forEach(g => {
+                    const opt = document.createElement('option');
+                    opt.value = g;
+                    opt.textContent = g;
+                    groupSelect.appendChild(opt);
+                });
+                groupSelector.classList.add('visible');
+                const lastGroup = load('lastGroup');
+                if (lastGroup && groups.includes(lastGroup)) {
+                    groupSelect.value = lastGroup;
+                    loadDisciplineSchedule(subject, lastGroup);
+                } else {
+                    loadDisciplineSchedule(subject, '');
+                }
+            } else {
+                groupSelector.classList.remove('visible');
+                loadDisciplineSchedule(subject, '');
+            }
+        }
+
+        function loadDisciplineSchedule(subject, group = '') {
+            if (!state.scheduleData) return;
+            const filtered = [];
+            state.scheduleData.schedules.forEach(s => {
+                const dayLessons = [];
+                s.lessons?.forEach(l => {
+                    const items = l.items?.filter(i => i.title === subject && (!group || i.partner === group));
+                    if (items && items.length) {
+                        dayLessons.push({ ...l, items });
+                    }
+                });
+                if (dayLessons.length) {
+                    filtered.push({
+                        date: s.date,
+                        week_day: s.week_day,
+                        lessons: dayLessons,
+                    });
+                }
+            });
+            renderDisciplineSchedule(filtered, subject, group);
+        }
+
+        function renderDisciplineSchedule(days, subject, group) {
+            const groupInfo = group ? ` (${group})` : '';
+            let html = `<div class="schedule-header">
+        <div class="schedule-date">${state.selectedTeacher}</div>
+        <div style="color:#6b7280;margin-top:4px">Дисциплина: ${subject}${groupInfo}</div>
+        <div style="color:#6b7280;margin-top:4px">Семестр: ${state.currentSemester?.label || ''}</div>
+    </div>`;
+
+            if (!days.length) {
+                html += '<div class="no-lessons">Занятий не найдено</div>';
+            } else {
+                days.forEach(day => {
+                    html += `<div style="border:1px solid #e5e7eb;border-radius:12px;padding:20px;margin-bottom:16px">
+                <div style="font-size:18px;font-weight:600;margin-bottom:12px">
+                    📅 ${day.date} (${weekDays[day.week_day]})
+                </div>`;
+                    day.lessons.forEach(l => {
+                        html += `<div class="lesson">
+                    <div class="lesson-header">
+                        <div class="lesson-number">${l.number}</div>
+                        <div style="color:#6b7280">🕐 ${l.time}</div>
+                    </div>`;
+                        l.items.forEach(item => {
+                            html += `<div class="lesson-content">
+                        <div class="lesson-title">📚 ${item.title}</div>
+                        <div>
+                            <span class="badge badge-type">${item.type}</span>
+                            <span class="badge badge-partner">${item.partner}</span>
+                            ${item.location ? `<span class="badge">${item.location}</span>` : ''}
+                        </div>
+                    </div>`;
+                        });
+                        html += '</div>';
+                    });
+                    html += '</div>';
+                });
+            }
+            const container = document.getElementById('disciplineScheduleContainer');
+            container.innerHTML = html;
+            container.style.display = 'block';
+            document.getElementById('scheduleContainer').style.display = 'none';
+        }
+
+        // --- Загрузка преподавателя (инициализация семестров и данных) ---
+        async function loadTeacherSchedule() {
+            if (!state.selectedTeacher) return;
+
+            // Скрыть селекторы до загрузки
+            document.getElementById('disciplineSelector').classList.remove('visible');
+            document.getElementById('semesterSelector').classList.remove('visible');
+            document.getElementById('groupSelector').classList.remove('visible');
+            document.getElementById('disciplineScheduleContainer').style.display = 'none';
+
+            populateSemesterSelect();
+            if (state.currentSemester) {
+                await loadTeacherScheduleForSemester();
+            } else {
+                showError('Нет доступных семестров', errorContainerDiscipline);
+            }
+        }
+
+        // --- Обработчики для дисциплины и группы ---
+        document.getElementById('disciplineSelect')?.addEventListener('change', (e) => {
+            const subj = e.target.value;
+            if (subj) {
+                save('lastSubject', subj);
+                onSubjectChange(subj);
+            } else {
+                document.getElementById('disciplineScheduleContainer').style.display = 'none';
+                document.getElementById('groupSelector').classList.remove('visible');
+            }
         });
 
-        // Autocomplete
+        document.getElementById('groupSelect')?.addEventListener('change', (e) => {
+            const group = e.target.value;
+            if (group) save('lastGroup', group);
+            loadDisciplineSchedule(document.getElementById('disciplineSelect').value, group);
+        });
+
+        // --- Вспомогательные функции для автокомплита и общих загрузок ---
         function setupAutocomplete(input, list, onSelect, filterFn) {
             let highlighted = -1;
-            
-            input.addEventListener('input', e => {
+
+            input.addEventListener('input', (e) => {
                 const query = e.target.value.trim();
                 highlighted = -1;
                 if (query.length < 1) {
@@ -274,7 +675,7 @@
                 renderList(items, query, list, onSelect);
             });
 
-            input.addEventListener('keydown', e => {
+            input.addEventListener('keydown', (e) => {
                 const items = list.querySelectorAll('.autocomplete-item');
                 if (e.key === 'ArrowDown') {
                     e.preventDefault();
@@ -326,61 +727,22 @@
             });
         }
 
-        // Client autocomplete
-        setupAutocomplete(
-            clientInput,
-            autocompleteList,
-            name => {
-                clientInput.value = name;
-                state.selectedClient = name;
-                autocompleteList.classList.remove('visible');
-                save('lastClient', name);
-                if (dateInput.value) loadSchedule();
-            },
-            query => state.clients.filter(c => c.toLowerCase().includes(query.toLowerCase())).slice(0, 50)
-        );
-
-        // Teacher autocomplete
-        setupAutocomplete(
-            teacherInput,
-            teacherAutocompleteList,
-            name => {
-                teacherInput.value = name;
-                state.selectedTeacher = name;
-                teacherAutocompleteList.classList.remove('visible');
-                save('lastTeacher', name);
-                loadTeacherSchedule();
-            },
-            query => state.teachers.filter(t => t.toLowerCase().includes(query.toLowerCase())).slice(0, 50)
-        );
-
-        // Click outside to close
-        document.addEventListener('click', e => {
-            if (!clientInput.contains(e.target) && !autocompleteList.contains(e.target)) {
-                autocompleteList.classList.remove('visible');
-            }
-            if (!teacherInput.contains(e.target) && !teacherAutocompleteList.contains(e.target)) {
-                teacherAutocompleteList.classList.remove('visible');
-            }
-        });
-
-        // Load clients
+        // --- Загрузка списка клиентов и преподавателей ---
         async function loadClients() {
             try {
                 const res = await fetch('https://app.omsktec.ru/api/schedule/clients');
                 const data = await res.json();
                 state.clients = [...data.groups, ...data.teachers].sort();
                 state.teachers = [...data.teachers].sort();
-                
+
                 const lastClient = load('lastClient');
                 if (lastClient) {
-                    clientInput.value = lastClient;
+                    document.getElementById('clientInput').value = lastClient;
                     state.selectedClient = lastClient;
                 }
-                
                 const lastTeacher = load('lastTeacher');
                 if (lastTeacher) {
-                    teacherInput.value = lastTeacher;
+                    document.getElementById('teacherInput').value = lastTeacher;
                     state.selectedTeacher = lastTeacher;
                 }
             } catch (err) {
@@ -388,25 +750,27 @@
             }
         }
 
-        // Load schedule for date
+        // --- Загрузка расписания на день (вкладка "По дням") ---
         async function loadSchedule() {
-            const name = state.selectedClient || clientInput.value.trim();
-            const date = dateInput.value;
+            const name = state.selectedClient || document.getElementById('clientInput').value.trim();
+            const date = document.getElementById('dateInput').value;
             if (!name || !date) return;
 
-            scheduleContainer.innerHTML = '<div class="loading">Загрузка...</div>';
-            scheduleContainer.style.display = 'block';
-            disciplineScheduleContainer.style.display = 'none';
+            const container = document.getElementById('scheduleContainer');
+            container.innerHTML = '<div class="loading">Загрузка...</div>';
+            container.style.display = 'block';
+            document.getElementById('disciplineScheduleContainer').style.display = 'none';
 
             try {
-                const res = await fetch(`https://app.omsktec.ru/api/schedule?client_name=${encodeURIComponent(name)}`, {
-                    headers: { 'X-CLIENT-TIME': new Date(date).toISOString() }
-                });
+                const res = await fetch(
+                    `https://app.omsktec.ru/api/schedule?client_name=${encodeURIComponent(name)}`,
+                    { headers: { 'X-CLIENT-TIME': new Date(date).toISOString() } }
+                );
                 const data = await res.json();
                 if (data.schedules && data.schedules.length) {
                     renderSchedule(data.schedules[0], name);
                 } else {
-                    scheduleContainer.innerHTML = '<div class="no-lessons">Расписание не найдено</div>';
+                    container.innerHTML = '<div class="no-lessons">Расписание не найдено</div>';
                 }
             } catch (err) {
                 showError('Ошибка: ' + err.message);
@@ -415,217 +779,112 @@
 
         function renderSchedule(schedule, name) {
             let html = `<div class="schedule-header">
-                <div class="schedule-date">${name}</div>
-                <div style="color:#6b7280;margin-top:4px">${schedule.date} - ${weekDays[schedule.week_day]}</div>
-            </div>`;
-            
+        <div class="schedule-date">${name}</div>
+        <div style="color:#6b7280;margin-top:4px">${schedule.date} - ${weekDays[schedule.week_day]}</div>
+    </div>`;
+
             if (!schedule.lessons || !schedule.lessons.length) {
                 html += '<div class="no-lessons">Занятий нет</div>';
             } else {
-                schedule.lessons.forEach(lesson => {
+                schedule.lessons.forEach((lesson) => {
                     html += `<div class="lesson">
-                        <div class="lesson-header">
-                            <div class="lesson-number">${lesson.number}</div>
-                            <div style="color:#6b7280">🕐 ${lesson.time}</div>
-                        </div>`;
-                    lesson.items.forEach(item => {
+                <div class="lesson-header">
+                    <div class="lesson-number">${lesson.number}</div>
+                    <div style="color:#6b7280">🕐 ${lesson.time}</div>
+                </div>`;
+                    lesson.items.forEach((item) => {
                         html += `<div class="lesson-content">
-                            <div class="lesson-title">📚 ${item.title}</div>
-                            <div>
-                                <span class="badge badge-type">${item.type}</span>
-                                <span class="badge badge-partner">${item.partner}</span>
-                                ${item.location ? `<span class="badge">${item.location}</span>` : ''}
-                            </div>
-                        </div>`;
+                    <div class="lesson-title">📚 ${item.title}</div>
+                    <div>
+                        <span class="badge badge-type">${item.type}</span>
+                        <span class="badge badge-partner">${item.partner}</span>
+                        ${item.location ? `<span class="badge">${item.location}</span>` : ''}
+                    </div>
+                </div>`;
                     });
                     html += '</div>';
                 });
             }
-            scheduleContainer.innerHTML = html;
-            scheduleContainer.style.display = 'block';
+            document.getElementById('scheduleContainer').innerHTML = html;
         }
 
-        // Load teacher schedule
-        async function loadTeacherSchedule() {
-            if (!state.selectedTeacher) return;
+        function showError(msg, container = document.getElementById('errorContainer')) {
+            if (container) container.innerHTML = `<div class="error">${msg}</div>`;
+        }
 
-            disciplineSelector.classList.remove('visible');
-            groupSelector.classList.remove('visible');
-            disciplineScheduleContainer.style.display = 'none';
+        // --- Инициализация автокомплита для групп и преподавателей ---
+        const clientInput = document.getElementById('clientInput');
+        const autocompleteList = document.getElementById('autocompleteList');
+        const teacherInput = document.getElementById('teacherInput');
+        const teacherAutocompleteList = document.getElementById('teacherAutocompleteList');
 
-            try {
-                const year = new Date().getFullYear();
-                const month = new Date().getMonth();
-                const startDate = new Date(year, month >= 8 ? 8 : 0, 1).toISOString();
-                
-                const res = await fetch(`https://app.omsktec.ru/api/schedule?client_name=${encodeURIComponent(state.selectedTeacher)}`, {
-                    headers: { 'X-CLIENT-TIME': startDate }
-                });
-                const data = await res.json();
-                state.scheduleData = data;
+        if (clientInput && autocompleteList) {
+            setupAutocomplete(
+                clientInput,
+                autocompleteList,
+                (name) => {
+                    clientInput.value = name;
+                    state.selectedClient = name;
+                    autocompleteList.classList.remove('visible');
+                    save('lastClient', name);
+                    if (document.getElementById('dateInput').value) loadSchedule();
+                },
+                (query) => state.clients.filter(c => c.toLowerCase().includes(query.toLowerCase())).slice(0, 50)
+            );
+        }
 
-                // Extract subjects
-                const subjectSet = new Set();
-                data.schedules.forEach(s => {
-                    s.lessons?.forEach(l => {
-                        l.items?.forEach(item => subjectSet.add(item.title));
-                    });
-                });
-                state.subjects = Array.from(subjectSet).sort();
+        if (teacherInput && teacherAutocompleteList) {
+            setupAutocomplete(
+                teacherInput,
+                teacherAutocompleteList,
+                (name) => {
+                    teacherInput.value = name;
+                    state.selectedTeacher = name;
+                    teacherAutocompleteList.classList.remove('visible');
+                    save('lastTeacher', name);
+                    loadTeacherSchedule();
+                },
+                (query) => state.teachers.filter(t => t.toLowerCase().includes(query.toLowerCase())).slice(0, 50)
+            );
+        }
 
-                // Populate discipline select
-                disciplineSelect.innerHTML = '<option value="">Выберите дисциплину</option>';
-                state.subjects.forEach(subj => {
-                    const opt = document.createElement('option');
-                    opt.value = subj;
-                    opt.textContent = subj;
-                    disciplineSelect.appendChild(opt);
-                });
-
-                disciplineSelector.classList.add('visible');
-
-                // Load last subject
-                const lastSubj = load('lastSubject');
-                if (lastSubj && state.subjects.includes(lastSubj)) {
-                    disciplineSelect.value = lastSubj;
-                    onSubjectChange(lastSubj);
-                }
-            } catch (err) {
-                showError('Ошибка загрузки: ' + err.message, errorContainerDiscipline);
+        // Закрытие автокомплита при клике вне полей
+        document.addEventListener('click', (e) => {
+            if (clientInput && !clientInput.contains(e.target) && autocompleteList && !autocompleteList.contains(e.target)) {
+                autocompleteList.classList.remove('visible');
             }
-        }
-
-        // Subject change
-        disciplineSelect.addEventListener('change', e => {
-            const subj = e.target.value;
-            if (subj) {
-                save('lastSubject', subj);
-                onSubjectChange(subj);
-            } else {
-                disciplineScheduleContainer.style.display = 'none';
-                groupSelector.classList.remove('visible');
+            if (teacherInput && !teacherInput.contains(e.target) && teacherAutocompleteList && !teacherAutocompleteList.contains(e.target)) {
+                teacherAutocompleteList.classList.remove('visible');
             }
         });
 
-        function onSubjectChange(subject) {
-            const groups = getGroups(subject);
-            if (groups.length > 1) {
-                groupSelect.innerHTML = '<option value="">Все группы</option>';
-                groups.forEach(g => {
-                    const opt = document.createElement('option');
-                    opt.value = g;
-                    opt.textContent = g;
-                    groupSelect.appendChild(opt);
-                });
-                groupSelector.classList.add('visible');
-                
-                const lastGroup = load('lastGroup');
-                if (lastGroup && groups.includes(lastGroup)) {
-                    groupSelect.value = lastGroup;
-                    loadDisciplineSchedule(subject, lastGroup);
-                } else {
-                    loadDisciplineSchedule(subject, '');
-                }
-            } else {
-                groupSelector.classList.remove('visible');
-                loadDisciplineSchedule(subject, '');
-            }
-        }
-
-        groupSelect.addEventListener('change', e => {
-            const group = e.target.value;
-            if (group) save('lastGroup', group);
-            loadDisciplineSchedule(disciplineSelect.value, group);
-        });
-
-        function getGroups(subject) {
-            const groups = new Set();
-            state.scheduleData.schedules.forEach(s => {
-                s.lessons?.forEach(l => {
-                    l.items?.forEach(item => {
-                        if (item.title === subject) groups.add(item.partner);
-                    });
-                });
+        // --- Переключение вкладок ---
+        document.querySelectorAll('.tab-button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+                document.getElementById(btn.dataset.tab).classList.add('active');
+                btn.classList.add('active');
+                document.getElementById('scheduleContainer').style.display = 'none';
+                document.getElementById('disciplineScheduleContainer').style.display = 'none';
             });
-            return Array.from(groups).sort();
-        }
-
-        function loadDisciplineSchedule(subject, group = '') {
-            const filtered = [];
-            state.scheduleData.schedules.forEach(s => {
-                const dayLessons = [];
-                s.lessons?.forEach(l => {
-                    const items = l.items?.filter(i => 
-                        i.title === subject && (!group || i.partner === group)
-                    );
-                    if (items && items.length) {
-                        dayLessons.push({ ...l, items });
-                    }
-                });
-                if (dayLessons.length) {
-                    filtered.push({ date: s.date, week_day: s.week_day, lessons: dayLessons });
-                }
-            });
-
-            renderDisciplineSchedule(filtered, subject, group);
-        }
-
-        function renderDisciplineSchedule(days, subject, group) {
-            const groupInfo = group ? ` (${group})` : '';
-            let html = `<div class="schedule-header">
-                <div class="schedule-date">${state.selectedTeacher}</div>
-                <div style="color:#6b7280;margin-top:4px">Дисциплина: ${subject}${groupInfo}</div>
-            </div>`;
-
-            if (!days.length) {
-                html += '<div class="no-lessons">Занятий не найдено</div>';
-            } else {
-                days.forEach(day => {
-                    html += `<div style="border:1px solid #e5e7eb;border-radius:12px;padding:20px;margin-bottom:16px">
-                        <div style="font-size:18px;font-weight:600;margin-bottom:12px">
-                            📅 ${day.date} (${weekDays[day.week_day]}) [${day.lessons.length}]
-                        </div>`;
-                    day.lessons.forEach(l => {
-                        html += `<div class="lesson">
-                            <div class="lesson-header">
-                                <div class="lesson-number">${l.number}</div>
-                                <div style="color:#6b7280">🕐 ${l.time}</div>
-                            </div>`;
-                        l.items.forEach(item => {
-                            html += `<div class="lesson-content">
-                                <div class="lesson-title">📚 ${item.title}</div>
-                                <div>
-                                    <span class="badge badge-type">${item.type}</span>
-                                    <span class="badge badge-partner">${item.partner}</span>
-                                    ${item.location ? `<span class="badge">${item.location}</span>` : ''}
-                                </div>
-                            </div>`;
-                        });
-                        html += '</div>';
-                    });
-                    html += '</div>';
-                });
-            }
-
-            disciplineScheduleContainer.innerHTML = html;
-            disciplineScheduleContainer.style.display = 'block';
-            scheduleContainer.style.display = 'none';
-        }
-
-        function showError(msg, container = errorContainer) {
-            container.innerHTML = `<div class="error">${msg}</div>`;
-        }
-
-        // Init
-        dateInput.value = new Date().toISOString().split('T')[0];
-        dateInput.addEventListener('change', () => {
-            if (state.selectedClient || clientInput.value.trim()) loadSchedule();
         });
 
+        // --- Обработчик выбора даты для дневного режима ---
+        const dateInputElem = document.getElementById('dateInput');
+        if (dateInputElem) {
+            dateInputElem.value = new Date().toISOString().split('T')[0];
+            dateInputElem.addEventListener('change', () => {
+                if (state.selectedClient || clientInput?.value.trim()) loadSchedule();
+            });
+        }
+
+        // --- Запуск при загрузке страницы ---
         loadClients().then(() => {
-            if (state.selectedClient && dateInput.value) loadSchedule();
+            if (state.selectedClient && dateInputElem?.value) loadSchedule();
             if (state.selectedTeacher) loadTeacherSchedule();
         });
     </script>
 </body>
+
 </html>
